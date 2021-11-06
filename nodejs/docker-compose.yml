@@ -1,0 +1,33 @@
+version: '3'
+services:
+  mongodb:
+    container_name: mongo-data-base
+    image: mongo:3.2.6
+    ports:
+      - '27017:27017'
+
+  mongo-seed:
+    container_name: mongo_seed
+    volumes:
+      - ./data-filler-service/init.json:/data/init.json
+    build: ./data-filler-service
+    links:
+      - mongodb
+
+
+  app:
+    container_name: docker-node-mongo
+    restart: always
+    build: ./web-service
+    ports:
+      - '11095:4200'
+    links:
+      - mongodb
+    depends_on:
+      - mongo-seed
+
+#volumes:
+#  init-data:
+#    name: init-data
+#    external: true
+
